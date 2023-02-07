@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
     return GetMaterialApp(
       theme: ThemeData(primarySwatch: Colors.blueGrey),
       home: const HomePage(),
-      initialRoute: VideoScreen.id,
+      initialRoute: HomePage.id,
       routes: {
         HomePage.id: (context) => const HomePage(),
         VideoScreen.id: (context) => const VideoScreen(),
