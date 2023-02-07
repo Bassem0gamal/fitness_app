@@ -1,0 +1,20 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+
+const cHomePageBackGround = Color(0xFFfbfcff);
+const cGradientFirst = Color(0xff0f17ad);
+const cGradientSecond = Color(0xFF6985e8);
+const cHomePageTitle = Color(0xFF302f51);
+const cHomePageSubtitle = Color(0xFF414160);
+const cHomePageDetail = Color(0xFF6588f4);
+const cHomePageIcons = Color(0xFF3b3c5c);
+const cHomePageContainerTextSmall = Color(0xFFf4f5fd);
+const cHomePageContainerTextBig = Color(0xFFffffff);
+const cHomePagePlan = Color(0xFFa2a2b1);
+const cSecondPageTopIcon = Color(0xFFb7bce8);
+const cSecondPageTitle = Color(0xFFfefeff);
+const cSecondPageContainerGradient1st = Color(0xFF6588f4);
+const cSecondPageContainerGradient2nd = Color(0xFF6d8dea);
+const cLoop = Color(0xFF6d8dea);
+const cSets = Color(0xFF9999a9);
+const cCircuits = Color(0xFF2f2f51);
