@@ -1,5 +1,5 @@
-import 'package:fitness_app/home_page.dart';
-import 'package:fitness_app/video_screen.dart';
+import 'package:fitness_app/screens/home/home_screen_2.dart';
+import 'package:fitness_app/screens/video/video_screen_2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,12 +19,26 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       theme: ThemeData(primarySwatch: Colors.blueGrey),
-      home: const HomePage(),
-      initialRoute: HomePage.id,
-      routes: {
-        HomePage.id: (context) => const HomePage(),
-        VideoScreen.id: (context) => const VideoScreen(),
-      },
+      home: const VideoScreen2(),
+      initialRoute: VideoScreen2.id,
+      getPages: [
+        // GetPage(
+        //     name: HomeScreen.id,
+        //     page: () => const HomeScreen(),
+        //     binding: SampleBind()),
+        // GetPage(
+        //     name: VideoScreen.id,
+        //     page: () => const VideoScreen(),
+        //     binding: SampleBind()),
+        GetPage(
+          name: HomeScreen2.id,
+          page: () => const HomeScreen2(),
+        ),
+        GetPage(
+          name: VideoScreen2.id,
+          page: () => const VideoScreen2(),
+        ),
+      ],
     );
   }
 }

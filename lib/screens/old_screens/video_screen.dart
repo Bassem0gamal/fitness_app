@@ -1,25 +1,33 @@
 import 'dart:convert';
+import 'dart:math';
 
-import 'package:fitness_app/colors.dart';
+import 'package:fitness_app/components/colors.dart';
+import 'package:fitness_app/components/text_style.dart';
+import 'package:fitness_app/my_controllers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../components/decoration.dart';
+import '../../components/icons.dart';
+
 class VideoScreen extends StatefulWidget {
   const VideoScreen({Key? key}) : super(key: key);
 
-  static String id = 'video_screen';
+  static String id = '/video_screen';
 
   @override
   State<VideoScreen> createState() => _VideoScreenState();
 }
 
 class _VideoScreenState extends State<VideoScreen> {
+  VideoScreenController videoController = Get.put(VideoScreenController());
   List videoInfo = [];
+
   bool playVideo = false;
   bool _isPlaying = false;
   bool _disposed = false;
-  int _isPlayingIndex = -1;
+  int _isPlayingIndex = 0;
   VideoPlayerController? _controller;
 
   _initData() async {
@@ -34,8 +42,8 @@ class _VideoScreenState extends State<VideoScreen> {
 
   @override
   void initState() {
-    super.initState();
     _initData();
+    super.initState();
   }
 
   @override
@@ -52,23 +60,14 @@ class _VideoScreenState extends State<VideoScreen> {
     return Scaffold(
       body: Container(
         decoration: playVideo == false
-            ? BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    cGradientFirst.withOpacity(0.9),
-                    cGradientSecond.withOpacity(0.9),
-                  ],
-                  begin: const FractionalOffset(0.0, 0.4),
-                  end: Alignment.topRight,
-                ),
-              )
-            : const BoxDecoration(color: cGradientSecond),
+            ? vs1stContainerDecoration
+            : vs2ndContainerDecoration,
         child: Column(
           children: [
             playVideo == false
                 ? Container(
                     padding: const EdgeInsets.only(
-                        top: 70.0, left: 30.0, right: 30.0),
+                        top: 50.0, left: 30.0, right: 30.0),
                     width: MediaQuery.of(context).size.width,
                     height: 300,
                     child: Column(
@@ -77,35 +76,24 @@ class _VideoScreenState extends State<VideoScreen> {
                         Row(
                           children: [
                             IconButton(
-                              onPressed: () {
-                                Get.back();
-                              },
-                              icon: const Icon(Icons.arrow_back_ios,
-                                  size: 20.0, color: cSecondPageTopIcon),
-                            ),
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                icon: backArrowIcon(Colors.white)),
                             Expanded(child: Container()),
-                            const Icon(
-                              Icons.info_outline,
-                              size: 20.0,
-                              color: cSecondPageTopIcon,
-                            ),
                           ],
                         ),
                         const SizedBox(height: 32.0),
-                        const Text(
+                        Text(
                           'Legs Toning',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            color: cHomePageContainerTextSmall,
-                          ),
+                          style: kTitleTextStyle.copyWith(
+                              color: cHomePageContainerTextSmall),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'and Glutes Workout',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            color: cHomePageContainerTextSmall,
-                          ),
+                          style: kTitleTextStyle.copyWith(
+                              color: cHomePageContainerTextSmall),
                         ),
                         const SizedBox(height: 32.0),
                         Row(
@@ -113,25 +101,15 @@ class _VideoScreenState extends State<VideoScreen> {
                             Container(
                               width: 90.0,
                               height: 30.0,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.25),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
+                              decoration: vs3rdDecoration,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(
-                                    Icons.timer_outlined,
-                                    size: 20,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(width: 5.0),
-                                  Text(
+                                children: [
+                                  timerIcon(Colors.white),
+                                  const SizedBox(width: 5.0),
+                                  const Text(
                                     '60 min',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      color: Colors.white,
-                                    ),
+                                    style: kBodyTextStyle,
                                   ),
                                 ],
                               ),
@@ -140,25 +118,15 @@ class _VideoScreenState extends State<VideoScreen> {
                             Container(
                               width: 230,
                               height: 30,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Colors.white.withOpacity(0.25),
-                              ),
+                              decoration: vs3rdDecoration,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(
-                                    Icons.handyman_outlined,
-                                    size: 20,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(width: 5.0),
-                                  Text(
+                                children: [
+                                  handyManIcon(Colors.white),
+                                  const SizedBox(width: 5.0),
+                                  const Text(
                                     'Resistance band,kettlebell',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      color: Colors.white,
-                                    ),
+                                    style: kBodyTextStyle,
                                   ),
                                 ],
                               ),
@@ -168,16 +136,15 @@ class _VideoScreenState extends State<VideoScreen> {
                       ],
                     ),
                   )
-                : Container(
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 100,
-                          padding: const EdgeInsets.only(
-                              top: 50, left: 24, right: 24),
-                          child: Row(
-                            children: [
-                              IconButton(
+                : Column(
+                    children: [
+                      Container(
+                        height: 100,
+                        padding: const EdgeInsets.only(
+                            top: 50, left: 24, right: 24, bottom: 12),
+                        child: Row(
+                          children: [
+                            IconButton(
                                 onPressed: () {
                                   if (playVideo == true) {
                                     setState(() {
@@ -185,36 +152,48 @@ class _VideoScreenState extends State<VideoScreen> {
                                     });
                                   }
                                 },
-                                icon: const Icon(
-                                  Icons.arrow_back_ios,
-                                  size: 20.0,
-                                  color: cSecondPageTopIcon,
-                                ),
-                              ),
-                              Expanded(child: Container()),
-                              const Icon(
-                                Icons.info_outline,
-                                color: cSecondPageTopIcon,
-                                size: 20,
-                              )
-                            ],
-                          ),
+                                icon: backArrowIconIOS(cSecondPageTopIcon)),
+                            Expanded(child: Container()),
+                            infoIcon(cSecondPageTopIcon)
+                          ],
                         ),
-                        _playVideo(context),
-                        _controlView(context),
-                      ],
-                    ),
+                      ),
+                      _playVideo(context),
+                      Slider(
+                        value: max(0, min(_progress * 100, 100)),
+                        min: 0,
+                        max: 100,
+                        divisions: 100,
+                        label: _position?.toString().split('.')[0],
+                        onChanged: (value) {
+                          setState(() {
+                            _progress = value * 0.01;
+                          });
+                        },
+                        onChangeStart: (value) {
+                          _controller?.pause();
+                        },
+                        onChangeEnd: (value) {
+                          final duration = _controller?.value.duration;
+                          if (duration != null) {
+                            var newValue = max(0, min(value, 99)) * 0.01;
+                            var millis =
+                                (duration.inMilliseconds * newValue).toInt();
+                            _controller?.seekTo(Duration(microseconds: millis));
+                            _controller?.play();
+                            print('$value');
+                            print(_progress);
+                          }
+                        },
+                      ),
+                      _controlView(context),
+                    ],
                   ),
 
             ///--------------------------------
             Expanded(
               child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(80.0),
-                  ),
-                ),
+                decoration: vs4thDecoration,
                 child: Column(
                   children: [
                     const SizedBox(height: 20.0),
@@ -222,28 +201,19 @@ class _VideoScreenState extends State<VideoScreen> {
                       padding: const EdgeInsets.only(left: 24.0),
                       child: Row(
                         children: [
-                          const Text(
+                          Text(
                             'Circuit 1 : Legs Toning',
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                                color: cCircuits),
+                            style: kSubtitleTextStyle.copyWith(
+                                color: cCircuits, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(width: 20),
                           Row(
-                            children: const [
-                              Icon(
-                                Icons.loop,
-                                size: 30.0,
-                                color: cLoop,
-                              ),
-                              SizedBox(width: 10.0),
+                            children: [
+                              loopIcon(cLoop),
+                              const SizedBox(width: 10.0),
                               Text(
                                 '3 sets',
-                                style: TextStyle(
-                                  fontSize: 15.0,
-                                  color: cSets,
-                                ),
+                                style: kBodyTextStyle.copyWith(color: cSets),
                               ),
                             ],
                           )
@@ -252,23 +222,20 @@ class _VideoScreenState extends State<VideoScreen> {
                     ),
                     Expanded(
                       child: ListView.builder(
-                        itemCount: videoInfo.length,
+                        itemCount: videoController.videoInfo.length,
                         itemBuilder: (_, int index) {
                           return GestureDetector(
                             onTap: () {
                               _onTapVideo(index);
-                              debugPrint(index.toString());
-                              setState(() {
-                                if (playVideo == false) {
-                                  playVideo = true;
-                                }
-                              });
+
+                              if (playVideo == false) {
+                                playVideo = true;
+                              }
                             },
                             child: Container(
                               padding: const EdgeInsets.only(left: 20.0),
                               height: 120,
                               width: 200,
-                              //color: Colors.red.withOpacity(0.5),
                               child: Column(
                                 children: [
                                   Row(
@@ -277,36 +244,26 @@ class _VideoScreenState extends State<VideoScreen> {
                                         width: 80,
                                         height: 80,
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(50),
+                                          borderRadius: BorderRadius.circular(50),
                                           image: DecorationImage(
                                             image: AssetImage(
-                                              videoInfo[index]['img'],
+                                              videoController.videoInfo[index]['img'],
                                             ),
                                           ),
-                                          // boxShadow: [
-                                          //   BoxShadow(
-                                          //     blurRadius: 30,
-                                          //     offset: Offset(2, 3),
-                                          //     color: Colors.grey.withOpacity(0.5)
-                                          //   )
-                                          // ]
                                         ),
                                       ),
                                       const SizedBox(width: 10.0),
                                       Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            videoInfo[index]['title'],
+                                            videoController.videoInfo[index]['title'],
                                             style: const TextStyle(
-                                                fontSize: 18.0,
-                                                fontWeight: FontWeight.bold),
+                                                fontSize: 18.0, fontWeight: FontWeight.bold),
                                           ),
                                           const SizedBox(height: 16.0),
                                           Text(
-                                            videoInfo[index]['time'],
+                                            videoController.videoInfo[index]['time'],
                                           ),
                                         ],
                                       )
@@ -317,11 +274,7 @@ class _VideoScreenState extends State<VideoScreen> {
                                       Container(
                                         height: 20,
                                         width: 80,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFeaeefc),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
+                                        decoration: vs5Decoration,
                                         child: const Center(
                                           child: Text(
                                             '15s Rest',
@@ -333,10 +286,10 @@ class _VideoScreenState extends State<VideoScreen> {
                                       ),
                                       Expanded(
                                           child: Container(
-                                        width: double.infinity,
-                                        height: 0.5,
-                                        color: Colors.grey,
-                                      ))
+                                            width: double.infinity,
+                                            height: 0.5,
+                                            color: Colors.grey,
+                                          ))
                                     ],
                                   )
                                 ],
@@ -356,37 +309,55 @@ class _VideoScreenState extends State<VideoScreen> {
     );
   }
 
+  String convertTwo(int value) {
+    if (value < 10) {
+      return '0$value';
+    } else {
+      return '$value';
+    }
+  }
+
   Widget _controlView(BuildContext context) {
+    final duration = _duration?.inSeconds ?? 0;
+    final head = _position?.inSeconds ?? 0;
+    final remained = max(0, duration - head);
+    final mins = convertTwo(remained ~/ 60.0);
+    final secs = convertTwo((remained % 60));
     return Container(
       height: 80,
       width: MediaQuery.of(context).size.width,
-      color: cGradientSecond,
+      color: cGradientSecond.withOpacity(0.1),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextButton(
-            onPressed: () async {
-              final index = _isPlayingIndex - 1;
-              if (index >= videoInfo.length) {
-                _onTapVideo(index);
-              } else {
-                Get.snackbar('Video', 'No more videos',
-                    snackPosition: SnackPosition.BOTTOM,
-                    icon: const Icon(
-                      Icons.face,
-                      size: 30,
-                      color: Colors.white,
-                    ),
-                    backgroundColor: cGradientSecond,
-                    colorText: Colors.white);
-              }
-            },
-            child: const Icon(
-              Icons.fast_rewind,
-              size: 30.0,
-              color: Colors.white,
-            ),
-          ),
+              onPressed: () async {
+                final index = _isPlayingIndex - 1;
+                if (index >= videoController.videoInfo.length) {
+                  _onTapVideo(index);
+                } else {
+                  Get.snackbar('Video', 'No more videos',
+                      snackPosition: SnackPosition.BOTTOM,
+                      icon: const Icon(
+                        Icons.face,
+                        size: 30,
+                        color: Colors.white,
+                      ),
+                      backgroundColor: cGradientSecond,
+                      colorText: Colors.white);
+                }
+              },
+              child: TextButton(
+                onPressed: () async {
+                  final index = _isPlayingIndex - 1;
+                  if (index <= videoController.videoInfo.length - 1) {
+                    _onTapVideo(index);
+                  } else {
+                    Get.snackbar('Video', 'No videos');
+                  }
+                },
+                child: backwardFillIcon(Colors.white),
+              )),
           TextButton(
             onPressed: () async {
               if (_isPlaying) {
@@ -410,26 +381,18 @@ class _VideoScreenState extends State<VideoScreen> {
           TextButton(
             onPressed: () async {
               final index = _isPlayingIndex + 1;
-              if (index <= videoInfo.length - 1) {
+              if (index <= videoController.videoInfo.length - 1) {
                 _onTapVideo(index);
               } else {
                 Get.snackbar('Video', 'No videos ahead !',
                     snackPosition: SnackPosition.BOTTOM,
-                    icon: const Icon(
-                      Icons.face,
-                      size: 30,
-                      color: Colors.white,
-                    ),
                     backgroundColor: cGradientSecond,
                     colorText: Colors.white);
               }
             },
-            child: const Icon(
-              Icons.fast_forward,
-              size: 30.0,
-              color: Colors.white,
-            ),
+            child: fastForwardIcon(Colors.white),
           ),
+          Text('$mins:$secs', style: kSmallTextStyle),
         ],
       ),
     );
@@ -448,28 +411,27 @@ class _VideoScreenState extends State<VideoScreen> {
         child: Center(
           child: Text(
             'Loading...',
-            style: TextStyle(
-              fontSize: 20.0,
-              color: Colors.white,
-            ),
+            style: kSubtitleTextStyle,
           ),
         ),
       );
     }
   }
 
-  var _onUpdateControllerTime;
+  Duration? _duration;
+  Duration? _position;
+  var _progress = 0.0;
 
   void _onControllerUpdate() async {
     if (_disposed) {
       return null;
     }
-    _onUpdateControllerTime = 0;
+    int onUpdateControllerTime = 0;
     final now = DateTime.now().microsecondsSinceEpoch;
-    if (_onUpdateControllerTime > now) {
+    if (onUpdateControllerTime > now) {
       return;
     }
-    _onUpdateControllerTime = now + 500;
+    onUpdateControllerTime = now + 500;
 
     final controller = _controller;
     if (controller == null) {
@@ -478,13 +440,27 @@ class _VideoScreenState extends State<VideoScreen> {
     if (controller!.value.isInitialized) {
       debugPrint('controller not initialized');
     }
+    var duration = _duration;
+
+    var position = await controller.position;
+    _position = position;
+
     final playing = controller.value.isPlaying;
+    _isPlaying = playing;
+    _duration ??= _controller?.value.duration;
+    if (playing) {
+      if (_disposed) return;
+      setState(() {
+        _progress = position!.inMilliseconds.ceilToDouble() /
+            duration!.inMilliseconds.ceilToDouble();
+      });
+    }
     _isPlaying = playing;
   }
 
   _onTapVideo(int index) {
-    final controller =
-        VideoPlayerController.network(videoInfo[index]['videoUrl']);
+    final controller = VideoPlayerController.network(
+        videoController.videoInfo[index]['videoUrl']);
     final old = _controller;
     _controller = controller;
     if (old != null) {
